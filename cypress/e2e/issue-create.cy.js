@@ -1,3 +1,5 @@
+// Import Faker at the top of your test file
+import { faker } from '@faker-js/faker';
 describe('Issue create', () => {
   beforeEach(() => {
     cy.visit('/');
@@ -8,6 +10,7 @@ describe('Issue create', () => {
         cy.visit(url + '/board?modal-issue-create=true');
       });
   });
+
 
   it('Should create an issue and validate it successfully', () => {
     // System finds modal for creating issue and does next steps inside of it
@@ -158,18 +161,21 @@ describe('Issue create', () => {
       });
   });
 
-  it.only('Test Case 2: Random Data Plugin Issue Creation', () => {
+  it('Test Case 2: Random Data Plugin Issue Creation', () => {
+    // Generate random data using Faker
+    const randomDescription = faker.lorem.words(3);
+    const randomTitle = faker.lorem.word();
     // System finds modal for creating issue and does next steps inside of it
     cy.get('[data-testid="modal:issue-create"]').within(() => {
       // Type value to description input field
-      cy.get('.ql-editor').type('My bug description');
-      cy.get('.ql-editor').should('have.text', 'My bug description');
+      cy.get('.ql-editor').type(randomDescription);
+      cy.get('.ql-editor').should('have.text', randomDescription);
 
       // Type value to title input field
       // Order of filling in the fields is first description, then title on purpose
       // Otherwise filling title first sometimes doesn't work due to web page implementation
-      cy.get('input[name="title"]').type('Bug');
-      cy.get('input[name="title"]').should('have.value', 'Bug');
+      cy.get('input[name="title"]').type(randomTitle);
+      cy.get('input[name="title"]').should('have.value', randomTitle);
 
       // Select Baby Yoda from reporter dropdown
       cy.get('[data-testid="select:reporterId"]').click();
@@ -202,7 +208,7 @@ describe('Issue create', () => {
           .should('have.length', '5')
           .first()
           .find('p')
-          .contains('Bug')
+          .contains(randomTitle)
           .siblings()
           .within(() => {
             //Assert that correct type icon are visible
@@ -211,7 +217,7 @@ describe('Issue create', () => {
       });
 
     cy.get('[data-testid="board-list:backlog"]')
-      .contains('Bug')
+      .contains(randomTitle)
       .within(() => {
         // Assert that correct avatar and type icon are visible
         cy.get('[data-testid="icon:task"]').should('be.visible');
